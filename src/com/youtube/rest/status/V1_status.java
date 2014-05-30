@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
  * Example how to get to this api resource:
  * http://localhost:7001/com.youtube.rest/api/v1/status
  * 
+ * Adding v1 to the ath is a good way to keep versioning our releases without depricating. This is best practice.
+ * 
  * @author Jack (by 308tube9
  *
  */
@@ -32,6 +34,16 @@ public class V1_status {
 		return "<p>Java Web Service</p>";
 	}
 	
+	/**
+	 * By adding version to the root path, another GET call is enabled.
+	 * Otherwise the two GET calls would conflict.to the path URL.
+	 * 
+	 * Note: this nested one down from the root. You will need to add /version in
+	 * 
+	 * Ex.: http://localhost:7001/com.youtube.rest/api/v1/status/version, returns 00.1.00
+	 * 
+	 * @return String - Version of the api
+	 */
 	@Path("/version")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
