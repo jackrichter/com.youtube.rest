@@ -3,6 +3,10 @@ package com.youtube.rest.status;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import java.sql.*;
+
+import com.youtube.dao.*;
+
 /**
  * This is the root for our restful api service.
  * In the web.xml file, we specify that /api/* need to be in the URL to
@@ -20,7 +24,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/v1/status/*")				// A root path in which this java class will be called
 public class V1_status {
 	
-	private static final String API_VERSION = "00.01.00";
+	private static final String API_VERSION = "00.02.00";	// With the database status method we improved the api, and we can now say it is version 2 
 	
 	/**
 	 * This method sits at the root of the api. It will return the name
@@ -49,6 +53,61 @@ public class V1_status {
 	@Produces(MediaType.TEXT_HTML)
 	public String returnVersion() {
 		return "<p>Version:</p>" + API_VERSION;
+	}
+	
+	/**
+	 * A generic method to demonstrate retreiving info from a database (in this case time)
+	 * and make available as a web service.
+	 * 
+	 * @return String - Datetime of the connected Database via JNDI "308tubeOracle"
+	 * 
+	 * @throws Exception
+	 */
+	@Path("/database")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public String returnDatabaseStatus () throws Exception {
+		
+		PreparedStatement query = null;
+		String myString = null;
+		String returnString = null;
+		Connection conn = null;
+		
+		try {
+			
+			// Get the database connection
+			conn = Oracle308tube.Oracle308tubeConn().getConnection();
+			
+			// Write the SQL query and have Java pre-compile it
+			query = conn.prepareStatement("select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') DATETIME " + "from sys.dual");
+			
+			// Send pre-compiled SQL to Oracle for data
+			ResultSet rs = query.executeQuery();
+			
+			// Loop through the record set
+			while (rs.next()) {
+				myString = rs.getString("DATETIME");
+			}
+			
+			// Very Important!
+			conn.close();
+			
+			returnString = "<p>Database Status</p>" + 
+					"<p> Database Date/Time returned: " + myString + "</p>";
+			
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		finally {
+			
+			if(conn != null) {
+				conn.close();
+			}
+		}
+		
+		return returnString;
 	}
 
 }
