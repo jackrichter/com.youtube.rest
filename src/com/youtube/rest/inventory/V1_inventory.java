@@ -33,17 +33,18 @@ public class V1_inventory {
 	 * Note: In real situations is never good to return everything from a database.
 	 * There should be built in limits.
 	 * 
-	 * @return - JSON array string
+	 * @return - An HTTP Response back to the client
 	 * 
 	 * @throws Exception
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnAllPcParts () throws Exception {
+	public Response returnAllPcParts () throws Exception {
 		
 		PreparedStatement query = null;
 		Connection conn = null;
 		String returnString = null;
+		Response rb = null;
 		
 		try {
 			
@@ -64,8 +65,11 @@ public class V1_inventory {
 			// Close db connection
 			conn.close();
 			
-			// Make the returning string
+			// Make the string that will be attached to our HTTP Response
 			returnString = jsonArray.toString();
+			
+			// Crreate the HTTP Response, add the string to the body of it, and compile it together
+			rb = Response.ok(returnString).build();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -74,7 +78,7 @@ public class V1_inventory {
 			if (conn != null) conn.close();
 		}
 		
-		return returnString;
+		return rb;
 	}
 
 }
