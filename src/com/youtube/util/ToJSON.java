@@ -12,7 +12,7 @@ import org.owasp.esapi.ESAPI;
 /**
  * Utility class to take database date and convert it to JSON format.
  * 
- * Note:  this java class requires the ESAPI 1.4.4 jar file (but actually uses ESAPI 2.0.1 jar)
+ * Note:  this java class requires the ESAPI 1.4.4 jar file.
  * ESAPI is used to encode data
  * 
  * @author Jack
@@ -87,17 +87,17 @@ public class ToJSON {
 					}
 					else if (rsmd.getColumnType(i) == Types.VARCHAR) {
 						
-/*						// Save column data in a temporary variable
+						// Save column data in a temporary variable
 						tmp = rs.getString(colName);
 						
 						// Reduce a possibly encoded string down to its simplest form (decode back the data to its base state)
 						tmp = ESAPI.encoder().canonicalize(tmp);
 						
 						// Encode data for use in HTML to e browser safe
-						tmp = ESAPI.encoder().encodeForHTML(tmp);*/
+						tmp = ESAPI.encoder().encodeForHTML(tmp);
 						
 						// Put the data into the JSON object
-						obj.put(colName, rs.getString(colName));
+						obj.put(colName, tmp);
 						
 					}
 					else if (rsmd.getColumnType(i) == Types.TINYINT) {
