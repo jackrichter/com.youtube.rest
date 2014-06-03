@@ -30,6 +30,8 @@ public class V2_inventory {
 	 * This method will return the specific brand of PC parts the user is looking for.
 	 * It uses QueryParam to bring in the data to the method.
 	 * 
+	 * Using QueryParam the value is provided directly in the URL path, after a ?, as a key/value pair. E.g. ?brand=ASUS
+	 * 
 	 * Example:
 	 * http://localhost:7001/com.youtube.rest/api/v2/inventory?brand=ASUS
 	 * 
@@ -68,6 +70,78 @@ public class V2_inventory {
 		
 		
 		return Response.ok(returnString).build();
-	}
+	}	
 
+	/**
+	 * Method to allow for an error message if on the URL path from the root is missing a brand and the
+	 * above method is missing.
+	 * 
+	 * Note: Two methods with annotation @GET only are not allowed. 
+	 * See class V1_status.
+	 * 
+	 * @return - Response embodied with an error message 
+	 * @throws Exception
+	 */
+/*	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response returnErrorOnBrand () throws Exception {
+		return Response.status(400).entity("Error: please specify brand for this search").build();
+	}*/
+	
+	/**
+	 * This method will return the specific brand of PC parts the user is looking for.
+	 * It uses PathParam to bring in the data to the method.
+	 * 
+	 * Using PathParam, the value is brought in as part of the path, e.g. /ASUS.
+	 * By naming the Path value as the variable (or entity) we are expecting, this is made possible.
+	 * 
+	 * Note that we combine the use of two annotations: @Path (with curly brackets) and @PathParam in the method's signature.
+	 * 
+	 * Example:
+	 * http://localhost:7001/com.youtube.rest/api/v2/inventory/ASUS
+	 * 
+	 * @param brand - product brand name
+	 * @return - JSON array result list from the database 
+	 * @throws Exception
+	 */
+	@Path("/{brand}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response returnBrand (@PathParam("brand") String brand) throws Exception {
+		String returnString = null;
+		JSONArray jsonArray = new JSONArray();
+		
+		try {
+			
+			/**
+			 * This check is not needed as we can't get to this method without using the brand as part of the URL path.
+			 */
+/*			// Inform client if brand parameter is missing in URL
+			if (brand == null) {
+				return Response.status(400).entity("Error: please specify brand for this search").build();
+			}*/
+			
+			// Instance of the class that performs the SQL work
+			Schema308tube dao = new Schema308tube();
+			
+			// Retrieve the sought data from db returned in a JSONArray
+			jsonArray = dao.queryReturnBrandParts(brand);
+			
+			// Handle the event that a certain brand doe's not exist in db
+			if (jsonArray.length() < 1) {
+				return Response.status(404).entity("Error: No matches for specified brand.").build();
+			}
+			
+			// Extract the string representation that will be placed in the body of the HTTP Response
+			returnString = jsonArray.toString();
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			Response.status(500).entity("Server was not able to process your request.").build();
+		}
+		
+		
+		return Response.ok(returnString).build();
+	}
 }
