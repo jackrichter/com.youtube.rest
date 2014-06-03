@@ -21,7 +21,8 @@ import com.youtube.dao.*;
  * @author Jack (by 308tube9
  *
  */
-@Path("/v1/status/*")				// A root path in which this java class will be called
+//A root path in which this java class will be called
+@Path("/v1/status/")	// Removed * (../*) wildcard to make it more compatible with tomcat			
 public class V1_status {
 	
 	private static final String API_VERSION = "00.02.00";	// With the database status method we improved the api, and we can now say it is version 2 

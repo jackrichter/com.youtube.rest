@@ -23,7 +23,7 @@ import com.youtube.util.ToJSON;
  * @author Jack
  *
  */
-@Path("/v1/inventory/*")
+@Path("/v1/inventory/")		// Removed * (../*) wildcard to make it more compatible with tomcat
 public class V1_inventory {
 	
 	/**
