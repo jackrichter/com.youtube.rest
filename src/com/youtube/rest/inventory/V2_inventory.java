@@ -10,6 +10,8 @@ import javax.ws.rs.QueryParam;
 
 import org.codehaus.jettison.json.JSONArray;
 
+import com.youtube.dao.Schema308tube;
+
 /**
  * Version 2 of inventory.
  * 
@@ -43,6 +45,20 @@ public class V2_inventory {
 		JSONArray jsonArray = new JSONArray();
 		
 		try {
+			
+			// Inform client if brand parameter is missing in URL
+			if (brand == null) {
+				return Response.status(400).entity("Error: please specify brand for this search").build();
+			}
+			
+			// Instance of the class that performs the SQL work
+			Schema308tube dao = new Schema308tube();
+			
+			// Retrieve the sought data from db returned in a JSONArray
+			jsonArray = dao.queryReturnBrandParts(brand);
+			
+			// Extract the string representation that will be placed in the body of the HTTP Response
+			returnString = jsonArray.toString();
 			
 		}
 		catch (Exception e) {
