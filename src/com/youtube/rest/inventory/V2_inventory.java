@@ -108,6 +108,7 @@ public class V2_inventory {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response returnBrand (@PathParam("brand") String brand) throws Exception {
+		
 		String returnString = null;
 		JSONArray jsonArray = new JSONArray();
 		
@@ -138,9 +139,47 @@ public class V2_inventory {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			Response.status(500).entity("Server was not able to process your request.").build();
+			return Response.status(500).entity("Server was not able to process your request.").build();
 		}
 		
+		return Response.ok(returnString).build();
+	}
+	
+	/**
+	 * This method does a search on both product and the product item number (= PC_PARTS_CODE).
+	 * It uses PathParam to bring in both parameters.
+	 * 
+	 * Example:
+	 * http://localhost:7001/com.youtube.rest/api/v2/inventory/ASUS/168131318
+	 * 
+	 * @param brand - the product brand
+	 * @param itemNumber - the particular code number for an item
+	 * @return - JSON array result list from the database
+	 * @throws Exception
+	 */
+	@Path("/{brand}/{itemNumber}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response returnSpecificBrandItem (@PathParam("brand") String brand, @PathParam("itemNumber") int itemNumber) throws Exception {
+		
+		String returnString = null;
+		JSONArray jsonArray = new JSONArray();
+		
+		try {
+			
+			// Instance of the class that performs the SQL work
+			Schema308tube dao = new Schema308tube();
+			
+			// Retrieve the sought data from db returned in a JSONArray
+			jsonArray = dao.queryReturnBrandItemNumber(brand, itemNumber);
+			
+			// Extract the string representation that will be placed in the body of the HTTP Response
+			returnString = jsonArray.toString();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(500).entity("Server was not able to process your request.").build();
+		}
 		
 		return Response.ok(returnString).build();
 	}
