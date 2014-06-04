@@ -81,4 +81,70 @@ public class Schema308tube extends Oracle308tube {
 		
 		return jsonArr;
 	}
+	
+	/**
+	 * This method will search for the specific brand and the brands item number in
+	 * the PC_PARTS table.
+	 * 
+	 * By using prepareStatement and the ?, we are protecting against SQL injection
+	 * 
+	 * Never add parameter straight into the prepareStatement
+	 * 
+	 * @param brand - product brand
+	 * @param itemNumber - product item number
+	 * @return - JSON array of the results from the database
+	 * @throws Exception
+	 */
+	public JSONArray queryReturnBrandItemNumber (String brand, int itemNumber) throws Exception {
+		
+		PreparedStatement query = null;
+		Connection conn = null;
+		
+		ToJSON converter = new ToJSON();
+		JSONArray jsonArr = new JSONArray();
+		
+		try {
+			
+			// Create a connection to db
+			conn = OraclePcPartsConnection();
+			
+			// Create the pre compiled SQL query.Obs. never use select * in real code
+			query = conn.prepareStatement("select PC_PARTS_PK, PC_PARTS_TITLE, PC_PARTS_CODE, PC_PARTS_MAKER, PC_PARTS_AVAIL,PC_PARTS_DESC " +
+					"from PC_PARTS " +
+					"where UPPER(PC_PARTS_MAKER) = ? " +
+					" and PC_PARTS_CODE = ?");
+			
+			/*
+			 * protect against SQL injection
+			 * when you have more than one ?, it will go in chronological
+			 * order.
+			 */
+			query.setString(1, brand.toUpperCase());
+			query.setInt(2, itemNumber);
+			
+			// Execute the SQL query and return a cursor
+			ResultSet rs = query.executeQuery();
+			
+			// Convert the data into a JSONArray of JSON objects
+			jsonArr = converter.toJSONArray(rs);
+			
+			// Very Important!
+			conn.close();
+		}
+		catch (SQLException sqlErr) {
+			sqlErr.printStackTrace();
+			return jsonArr;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return jsonArr;
+		}
+		finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
+		
+		return jsonArr;
+	}
 }
