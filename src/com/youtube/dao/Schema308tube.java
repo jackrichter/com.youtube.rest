@@ -147,4 +147,92 @@ public class Schema308tube extends Oracle308tube {
 		
 		return jsonArr;
 	}
+	
+	/**
+	 * This method will return all PC parts.
+	 * Done for benefit of V1, so that all SQL could fully be in dao package.
+	 * 
+	 * @return - all PC parts in JSON format
+	 * @throws Exception
+	 */
+	public JSONArray queryAllParts () throws Exception {
+		
+		PreparedStatement query = null;
+		Connection conn = null;
+		
+		ToJSON converter = new ToJSON();
+		JSONArray jsonArr = new JSONArray();
+		
+		try {
+			
+			conn = Schema308tube.OraclePcPartsConnection();
+			
+			query = conn.prepareStatement("select PC_PARTS_PK, PC_PARTS_TITLE, PC_PARTS_CODE, PC_PARTS_MAKER, PC_PARTS_AVAIL,PC_PARTS_DESC " +
+					"from PC_PARTS");
+			
+			ResultSet rs = query.executeQuery();
+			
+			jsonArr = converter.toJSONArray(rs);
+			
+			conn.close();
+		}
+		catch (SQLException sqlErr) {
+			sqlErr.printStackTrace();
+			return jsonArr;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return jsonArr;
+		}
+		finally {
+			if(conn != null) {
+				conn.close();
+			}
+		}
+		
+		return jsonArr;
+	}
+	
+	/**
+	 * This method will return a time/stamp from database.
+	 * 
+	 * @return - time/stamp in JSON format
+	 * @throws Exception
+	 */
+	public JSONArray queryCheckDbConnection () throws Exception {
+
+		PreparedStatement query = null;
+		Connection conn = null;
+		
+		ToJSON converter = new ToJSON();
+		JSONArray jsonArr = new JSONArray();
+		
+		try {
+			
+			conn = Schema308tube.OraclePcPartsConnection();
+			
+			query = conn.prepareStatement("select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') DATETIME " + "from sys.dual");
+			
+			ResultSet rs = query.executeQuery();
+			
+			jsonArr = converter.toJSONArray(rs);
+			
+			conn.close();
+		}
+		catch (SQLException sqlErr) {
+			sqlErr.printStackTrace();
+			return jsonArr;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return jsonArr;
+		}
+		finally {
+			if(conn != null) {
+				conn.close();
+			}
+		}
+		
+		return jsonArr;
+	}
 }
