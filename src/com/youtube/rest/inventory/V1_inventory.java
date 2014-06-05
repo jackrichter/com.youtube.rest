@@ -1,9 +1,5 @@
 package com.youtube.rest.inventory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -12,8 +8,7 @@ import javax.ws.rs.core.Response;
 
 import org.codehaus.jettison.json.JSONArray;
 
-import com.youtube.dao.Oracle308tube;
-import com.youtube.util.ToJSON;
+import com.youtube.dao.Schema308tube;
 
 /**
  * This class is used to manage inventory for computer parts as per the PC_Parts table in Oracle XE DB (sqldeveloper)
@@ -32,51 +27,39 @@ public class V1_inventory {
 	 * There should be built in limits.
 	 * 
 	 * @return - An HTTP Response back to the client
-	 * 
 	 * @throws Exception
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response returnAllPcParts () throws Exception {
 		
-		PreparedStatement query = null;
-		Connection conn = null;
+		/**
+		 * Class refactored to fit the dao package
+		 */
+		
 		String returnString = null;
 		Response rb = null;
 		
+		JSONArray jsonArray = new JSONArray();
+		
 		try {
 			
-			// Make a connection to our Oracle db
-			conn = Oracle308tube.Oracle308tubeConn().getConnection();
+			// Instance of the class that performs the SQL work and create the DB connection
+			Schema308tube dao = new Schema308tube();
 			
-			// Create the java equivalent "precompiled stored procedure"
-			query = conn.prepareStatement("select * from PC_PARTS");
-			
-			// Execute the SQL query and return a cursor
-			ResultSet rs = query.executeQuery();
-			
-			// Convert the contents of the returned data set into a JSONArray, using the utility package
-			ToJSON converter = new ToJSON();
-			JSONArray jsonArray = new JSONArray();
-			jsonArray = converter.toJSONArray(rs);
-			
-			// Close db connection
-			conn.close();
+			// Query for all parts
+			jsonArray = dao.queryAllParts();
 			
 			// Make the string that will be attached to our HTTP Response
 			returnString = jsonArray.toString();
 			
-			// Crreate the HTTP Response, add the string to the body of it, and compile it together
+			// Create the HTTP Response, add the string to the body of it, and compile it together
 			rb = Response.ok(returnString).build();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		finally {
-			if (conn != null) conn.close();
-		}
 		
 		return rb;
 	}
-
 }

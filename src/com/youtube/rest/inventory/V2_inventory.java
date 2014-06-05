@@ -68,7 +68,6 @@ public class V2_inventory {
 			Response.status(500).entity("Server was not able to process your request.").build();
 		}
 		
-		
 		return Response.ok(returnString).build();
 	}	
 

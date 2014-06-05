@@ -2,8 +2,9 @@ package com.youtube.rest.status;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import java.sql.*;
+import org.codehaus.jettison.json.JSONArray;
 
 import com.youtube.dao.*;
 
@@ -60,55 +61,40 @@ public class V1_status {
 	 * A generic method to demonstrate retreiving info from a database (in this case time)
 	 * and make available as a web service.
 	 * 
-	 * @return String - Datetime of the connected Database via JNDI "308tubeOracle"
-	 * 
+	 * @return Response - An HTTP Response back to the client containing the Date and time of the connected Database via JNDI "308tubeOracle"
 	 * @throws Exception
 	 */
 	@Path("/database")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	public String returnDatabaseStatus () throws Exception {
+	public Response returnDatabaseStatus () throws Exception {
 		
-		PreparedStatement query = null;
-		String myString = null;
+		/**
+		 * Class refactored to fit the dao package
+		 */
+		
 		String returnString = null;
-		Connection conn = null;
+		
+		JSONArray jsonArr = new JSONArray();
 		
 		try {
 			
-			// Get the database connection
-			conn = Oracle308tube.Oracle308tubeConn().getConnection();
+			// Instance of the class that performs the SQL work and create the DB connection
+			Schema308tube dao = new Schema308tube();
 			
-			// Write the SQL query and have Java pre-compile it
-			query = conn.prepareStatement("select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') DATETIME " + "from sys.dual");
-			
-			// Send pre-compiled SQL to Oracle for data
-			ResultSet rs = query.executeQuery();
-			
-			// Loop through the record set
-			while (rs.next()) {
-				myString = rs.getString("DATETIME");
-			}
-			
-			// Very Important!
-			conn.close();
+			// Query for DB Status (Date/Time)
+			jsonArr = dao.queryCheckDbConnection();
 			
 			returnString = "<p>Database Status</p>" + 
-					"<p> Database Date/Time returned: " + myString + "</p>";
+					"<p> Database Date/Time returned: " + jsonArr.toString() + "</p>";
 			
 		}
 		catch (Exception e) {
-			
 			e.printStackTrace();
-		}
-		finally {
-			
-			if(conn != null) {
-				conn.close();
-			}
+			Response.status(500).entity("Server was not able to process your request.").build();
 		}
 		
-		return returnString;
+		return Response.ok().entity(returnString).build();
 	}
 
 }
