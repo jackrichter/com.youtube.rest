@@ -29,7 +29,7 @@ public class Oracle308tube {
 	 * @return - Database object
 	 * @throws Exception
 	 */
-	public static DataSource Oracle308tubeConn () throws Exception {
+	private static DataSource Oracle308tubeConn () throws Exception {
 		
 		// Check to see if the database object is already defined. If it is, no need to look it up again.
 		if (Oracle308tube != null) {
