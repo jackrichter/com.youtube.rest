@@ -182,22 +182,22 @@ public class V2_inventory {
 		
 		return Response.ok(returnString).build();
 	}
-	
-	/**
-	 *
-	 * This is a class used by the addPcParts method (POST). We use it to bind incoming data to it.
-	 * Used by the Jackson Processor
-	 * 
-	 * Note: for re-usability you should place this in its own package.
-	 * 
-	 * @author Jack
-	 *
-	 */
-	class ItemEntry {
-		public String PC_PARTS_TITLE;
-		public String PC_PARTS_CODE;
-		public String PC_PARTS_MAKER;
-		public String PC_PARTS_AVAIL;
-		public String PC_PARTS_DESC;
-	}
+}
+
+/**
+ *
+ * This is a class used by the addPcParts method (POST). We use it to bind incoming data to it.
+ * Used by the Jackson Processor
+ * 
+ * Note: for re-usability you should place this in its own package.
+ * 
+ * @author Jack
+ *
+ */
+class ItemEntry {
+	public String PC_PARTS_TITLE;
+	public String PC_PARTS_CODE;
+	public String PC_PARTS_MAKER;
+	public String PC_PARTS_AVAIL;
+	public String PC_PARTS_DESC;
 }
