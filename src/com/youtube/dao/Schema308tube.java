@@ -26,6 +26,71 @@ import com.youtube.util.ToJSON;
 public class Schema308tube extends Oracle308tube {
 	
 	/**
+	 * Method to insert one raw of data into the PC_Parts table.
+	 * 
+	 *  Important: The primary key on PC_PARTS table will auto increment.
+	 * 	That means the PC_PARTS_PK column does not need to be apart of the 
+	 * 	SQL insert query below.
+	 * 
+	 * @param PC_PARTS_PK
+	 * @param PC_PARTS_TITLE
+	 * @param PC_PARTS_CODE
+	 * @param PC_PARTS_MAKER
+	 * @param PC_PARTS_AVAIL
+	 * @param PC_PARTS_DESC
+	 * 
+	 * @return - HTTP Status Code: 200 if success, 500 if error
+	 * @throws Exception
+	 */
+	public int insertIntoPc_Parts(String PC_PARTS_TITLE,
+			String PC_PARTS_CODE,
+			String PC_PARTS_MAKER,
+			String PC_PARTS_AVAIL,
+			String PC_PARTS_DESC) throws Exception {
+		
+		PreparedStatement query = null;
+		Connection conn = null;
+		
+		try {
+			
+			/**
+			 * In a real application, you should do data validation here
+			 * before starting to insert data into the database.
+			 */
+			
+			conn = Oracle308tube.OraclePcPartsConnection();
+			
+			query = conn.prepareStatement("insert into PC_PARTS " +
+					"(PC_PARTS_TITLE, PC_PARTS_CODE, PC_PARTS_MAKER, PC_PARTS_AVAIL, PC_PARTS_DESC) " +
+					"VALUES (?, ?, ?, ?, ?)");
+			
+			query.setString(1, PC_PARTS_TITLE);
+			query.setString(2, PC_PARTS_CODE);
+			query.setString(3, PC_PARTS_MAKER);
+			
+			// Convert into int
+			int avail = Integer.parseInt(PC_PARTS_AVAIL);
+			query.setInt(4, avail);
+			
+			query.setString(5, PC_PARTS_DESC);
+			
+			// We use a different command to update
+			query.executeUpdate();
+			
+			conn.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return 500;
+		}
+		finally {
+			if (conn != null) conn.close();
+		}
+		
+		return 200;
+	}
+	
+	/**
 	 * This method will search for a specific brand from the PC_PARTS table.
 	 * By using prepareStatement and the ?, we are protecting against SQL injection
 	 * 
