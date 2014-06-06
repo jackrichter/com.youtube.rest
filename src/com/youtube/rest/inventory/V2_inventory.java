@@ -194,7 +194,7 @@ public class V2_inventory {
 	 * Note: If you look, this method addPcParts using the same URL as a GET method returnBrandParts.
 	 * 		 We can do this because we are using different HTTP methods for the same URL string.
 	 * 
-	 * @param incomingData - must be in JSON format
+	 * @param incomingData - must be in JSON format. This type of param is known as the message body or the payload
 	 * @return String
 	 * @throws Exception
 	 */
@@ -212,7 +212,7 @@ public class V2_inventory {
 			System.out.println("IncomingData: " + incomingData);
 			
 			/**
-			 * ObjectMapper is from Jackson Processor framework
+			 * ObjectMapper is from Jackson Processor framework (known also as the Jackson Parser. Not a part of Jersey, but bundled in it). 
 			 * http://jackson.codehaus.org/
 			 * 
 			 * Using the readValue method, you can parse the JSON from the HTTP request
